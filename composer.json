@@ -1,5 +1,5 @@
 {
-    "name": "schachbulle/contao-schiedsrichterverteiler-bundle",
+    "name": "schachbulle/contao-dsolnews-bundle",
     "type": "contao-bundle",
     "description": "DSOL-Nachrichten für Contao 4",
     "license": "LGPL-3.0-or-later",
