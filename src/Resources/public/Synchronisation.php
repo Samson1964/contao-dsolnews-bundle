@@ -61,7 +61,7 @@ class Synchronisation
 					if($objRecord->numRows == 1)
 					{
 						// Nachricht bereits vorhanden, Update prüfen
-						if($objRecord->tstamp == $objNews->tstamp)
+						if($objRecord->tstamp != $objNews->tstamp)
 						{
 							//$text_update .= '... ... Update: '.$objNews->headline.' (DSOL: '.$objRecord->tstamp.' / Contao: '.$objNews->tstamp.')<br>';
 							$text_update .= '... ... Update: '.$objNews->headline.'<br>';

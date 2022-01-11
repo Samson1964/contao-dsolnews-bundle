@@ -1,5 +1,9 @@
 # DSOL-Nachrichten Changelog
 
+## Version 1.0.2 (2022-01-11)
+
+* Fix: Debug-Code entfernt, damit Update-Prüfung wieder funktioniert
+
 ## Version 1.0.1 (2022-01-11)
 
 * Add: Hinweis für Änderungen der Spalte tl_news.dsol_id
