@@ -1,0 +1,24 @@
+<div id="tl_buttons">
+<a href="<?= ampersand(str_replace('&key=dsolnews_synchro', '&act=edit', \Environment::get('request'))) ?>" class="header_back" title="<?= specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']) ?>" accesskey="b"><?= $GLOBALS['TL_LANG']['MSC']['backBT'] ?></a>
+</div>
+
+<h2 class="sub_headline"><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_headline'] ?></h2>
+<?= \Message::generate() ?>
+
+<div class="tl_listing_container" id="tl_listing">
+	<form action="<?= ampersand(\Environment::get('request'), true) ?>" id="tl_dsolnews_synchro" class="tl_form" method="get" enctype="multipart/form-data">
+	<div class="tl_formbody_edit">
+		<input type="hidden" name="do" value="news">
+		<input type="hidden" name="key" value="dsolnews_synchro">
+		<input type="hidden" name="id" value="<?= \Input::get('id') ?>">
+		<input type="hidden" name="rt" value="'<?= REQUEST_TOKEN ?>">
+		<input type="hidden" name="FORM_SUBMIT" value="tl_dsolnews_synchro">
+		<div class="tl_tbox">
+			<div style="margin-top:5px;">
+				<input type="submit" name="save" id="save" class="tl_submit" accesskey="s" value="<?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_submit'][0] ?>">
+				<p class="tl_help tl_tip" title=""><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_submit'][1] ?></p>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
