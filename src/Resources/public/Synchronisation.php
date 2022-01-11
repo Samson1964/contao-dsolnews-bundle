@@ -61,7 +61,7 @@ class Synchronisation
 					if($objRecord->numRows == 1)
 					{
 						// Nachricht bereits vorhanden, Update prüfen
-						if($objRecord->tstamp != $objNews->tstamp)
+						if($objRecord->tstamp == $objNews->tstamp)
 						{
 							//$text_update .= '... ... Update: '.$objNews->headline.' (DSOL: '.$objRecord->tstamp.' / Contao: '.$objNews->tstamp.')<br>';
 							$text_update .= '... ... Update: '.$objNews->headline.'<br>';
@@ -73,7 +73,7 @@ class Synchronisation
 								'headline'    => $objNews->headline,
 								'date'        => $objNews->date,
 								'subheadline' => $objNews->subheadline,
-								'teaser'      => $objNews->teaser,
+								'teaser'      => self::Parser($objNews->teaser),
 								'author'      => self::Autor($objNews->author),
 								'image'       => $bild['image'],
 								'thumbnail'   => $bild['thumb'],
@@ -101,7 +101,7 @@ class Synchronisation
 							'headline'    => $objNews->headline,
 							'date'        => $objNews->date,
 							'subheadline' => $objNews->subheadline,
-							'teaser'      => $objNews->teaser,
+							'teaser'      => self::Parser($objNews->teaser),
 							'author'      => self::Autor($objNews->author),
 							'image'       => $bild['image'],
 							'thumbnail'   => $bild['thumb'],
@@ -168,6 +168,18 @@ class Synchronisation
 	}
 
 	/*
+	 * Funktion Parser
+	 * Ersetzt in einem Text alle Contao-Variablen und modifiziert Links
+	 */
+	protected function Parser($string)
+	{
+		$string = \Controller::replaceInsertTags($string);
+		$string = str_replace('<a href="files/', '<a href="https://www.schachbund.de/files/', $string);
+		$string = str_replace('<a href="index.php/', '<a href="https://www.schachbund.de/', $string);
+		return $string;
+	}
+
+	/*
 	 * Funktion Autor
 	 * Liefert den Namen des Autors zu einer ID
 	 */
@@ -178,6 +190,10 @@ class Synchronisation
 		return (string)$objUser->name.'';
 	}
 
+	/*
+	 * Funktion getImages
+	 * Kopiert das Teaserbild in das Zielsystem
+	 */
 	protected function getImages($uuid, $newsId, $imageSize)
 	{
 		// Bild abrufen
