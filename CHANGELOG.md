@@ -1,5 +1,9 @@
 # DSOL-Nachrichten Changelog
 
+## Version 2.0.0 (2025-09-09)
+
+* Add: Abhängigkeit PHP 8
+
 ## Version 1.0.2 (2022-01-11)
 
 * Fix: Debug-Code entfernt, damit Update-Prüfung wieder funktioniert
