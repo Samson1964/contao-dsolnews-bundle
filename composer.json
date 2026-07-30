@@ -1,7 +1,14 @@
 {
     "name": "schachbulle/contao-dsolnews-bundle",
     "type": "contao-bundle",
-    "description": "DSOL-Nachrichten für Contao 4",
+    "description": "Verwaltet und veröffentlicht die Nachrichten der Deutschen Schach-Online-Liga.",
+    "keywords": [
+        "contao",
+        "schach",
+        "nachrichten",
+        "dsol"
+    ],
+    "homepage": "https://github.com/Samson1964/contao-dsolnews-bundle",
     "license": "LGPL-3.0-or-later",
     "authors": [
         {
