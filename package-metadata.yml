@@ -1,0 +1,12 @@
+# Quelle fuer die Metadaten im Contao Manager (contao/package-metadata).
+# Aenderungen hier werden von Claude in den Fork uebertragen.
+# Der englische Block wird beim Abgleich ergaenzt, falls er fehlt.
+
+de:
+    title: DSOL-Nachrichten
+    description: >
+        Verwaltet und veröffentlicht die Nachrichten der Deutschen Schach-Online-Liga.
+    keywords:
+        - Schach
+        - Nachrichten
+        - DSOL
