@@ -1,12 +1,22 @@
 <?php
 
-/**
- * legends
- */
-$GLOBALS['TL_LANG']['tl_settings']['dsolnews_legend']       = 'Datenbank DSOL-Nachrichten';
+declare(strict_types=1);
 
-/**
- * fields
+/*
+ * Dieses Bundle synchronisiert Nachrichten eines Contao-Archivs mit der
+ * Website der Deutschen Schach-Online-Liga; es läuft unter Contao 4.13
+ * und Contao 5.
+ *
+ * @license LGPL-3.0-or-later
+ */
+
+/*
+ * Legende
+ */
+$GLOBALS['TL_LANG']['tl_settings']['dsolnews_legend'] = 'Datenbank DSOL-Nachrichten';
+
+/*
+ * Felder
  */
 $GLOBALS['TL_LANG']['tl_settings']['dsolnews_host'] = array('Host', 'Host-Adresse der DSOL-Datenbank');
 $GLOBALS['TL_LANG']['tl_settings']['dsolnews_db'] = array('Datenbank', 'Name der DSOL-Datenbank');

@@ -1,24 +1,91 @@
+<?php // Backend-Template: Nachrichten zur DSOL-Website übertragen ?>
+
 <div id="tl_buttons">
-<a href="<?= ampersand(str_replace('&key=dsolnews_synchro', '&act=edit', \Environment::get('request'))) ?>" class="header_back" title="<?= specialchars($GLOBALS['TL_LANG']['MSC']['backBTTitle']) ?>" accesskey="b"><?= $GLOBALS['TL_LANG']['MSC']['backBT'] ?></a>
+	<a href="<?= $this->zurueck ?>" class="header_back" title="<?= $GLOBALS['TL_LANG']['MSC']['backBTTitle'] ?>" accesskey="b"><?= $GLOBALS['TL_LANG']['MSC']['backBT'] ?></a>
 </div>
 
 <h2 class="sub_headline"><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_headline'] ?></h2>
-<?= \Message::generate() ?>
 
-<div class="tl_listing_container" id="tl_listing">
-	<form action="<?= ampersand(\Environment::get('request'), true) ?>" id="tl_dsolnews_synchro" class="tl_form" method="get" enctype="multipart/form-data">
-	<div class="tl_formbody_edit">
-		<input type="hidden" name="do" value="news">
-		<input type="hidden" name="key" value="dsolnews_synchro">
-		<input type="hidden" name="id" value="<?= \Input::get('id') ?>">
-		<input type="hidden" name="rt" value="'<?= REQUEST_TOKEN ?>">
-		<input type="hidden" name="FORM_SUBMIT" value="tl_dsolnews_synchro">
-		<div class="tl_tbox">
-			<div style="margin-top:5px;">
-				<input type="submit" name="save" id="save" class="tl_submit" accesskey="s" value="<?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_submit'][0] ?>">
-				<p class="tl_help tl_tip" title=""><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_submit'][1] ?></p>
-			</div>
+<?= \Contao\Message::generate() ?>
+
+<div class="tl_formbody_edit">
+
+<?php if ($this->archivFehlt): ?>
+
+	<p class="tl_error">In den Einstellungen ist kein Nachrichten-Archiv f&uuml;r die DSOL-Nachrichten ausgew&auml;hlt.
+	Bitte zuerst unter <em>System &rarr; Einstellungen &rarr; Datenbank DSOL-Nachrichten</em> ein Archiv festlegen.</p>
+
+<?php else: ?>
+
+	<fieldset class="tl_box">
+		<legend><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro'][0] ?></legend>
+		<div class="widget">
+			<p class="tl_info">&Uuml;bertragen wird das Archiv <strong><?= \Contao\StringUtil::specialchars($this->archivTitel) ?></strong>. Neue Nachrichten
+			werden auf der DSOL-Website angelegt, ge&auml;nderte dort aufgefrischt. Auf der DSOL-Website gel&ouml;scht
+			wird nichts.</p>
+
+			<p><button id="dsolStart" class="tl_submit"><?= $GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro_submit'][0] ?></button></p>
 		</div>
-	</div>
-	</form>
+	</fieldset>
+
+	<fieldset class="tl_box" id="dsolAusgabe" style="display:none">
+		<legend>Protokoll</legend>
+		<div class="widget">
+			<p id="dsolStatus"></p>
+			<div id="dsolProtokoll" style="line-height:1.6"></div>
+			<p><a href="<?= $this->zurueck ?>" class="tl_submit">Zur&uuml;ck zur &Uuml;bersicht</a></p>
+		</div>
+	</fieldset>
+
+<?php endif; ?>
+
 </div>
+
+<?php if (!$this->archivFehlt): ?>
+<script>
+(function()
+{
+	var url = <?= json_encode(\Contao\Environment::get('request')) ?>;
+	var token = <?= json_encode($this->requestToken) ?>;
+
+	var startKnopf = document.getElementById('dsolStart');
+	var ausgabe = document.getElementById('dsolAusgabe');
+	var status = document.getElementById('dsolStatus');
+	var protokoll = document.getElementById('dsolProtokoll');
+
+	startKnopf.addEventListener('click', async function(ereignis)
+	{
+		ereignis.preventDefault();
+		startKnopf.disabled = true;
+		ausgabe.style.display = '';
+		protokoll.innerHTML = '';
+		status.textContent = 'Übertragung läuft …';
+
+		try
+		{
+			var formular = new FormData();
+			formular.append('dsolnewsAktion', 'start');
+			formular.append('REQUEST_TOKEN', token);
+
+			// WICHTIG: KEIN X-Requested-With-Header — Contaos eigenes Ajax-System
+			// fängt solche Anfragen sonst mit "Missing Ajax action" ab, bevor der
+			// Modul-Schlüssel key=dsolnews_synchro überhaupt läuft
+			var antwort = await fetch(url, { method: 'POST', body: formular });
+			if(!antwort.ok) throw new Error('HTTP-Fehler ' + antwort.status);
+
+			var ergebnis = await antwort.json();
+			protokoll.innerHTML = (ergebnis.protokoll || []).join('<br>');
+
+			if(ergebnis.fehler) throw new Error(ergebnis.fehler);
+
+			status.textContent = 'Übertragung abgeschlossen.';
+		}
+		catch(e)
+		{
+			status.innerHTML = '<span class="tl_red">Abgebrochen: ' + (e.message || String(e)) + '</span>';
+			startKnopf.disabled = false;
+		}
+	});
+})();
+</script>
+<?php endif; ?>

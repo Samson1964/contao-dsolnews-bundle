@@ -1,0 +1,29 @@
+services:
+    # Alle Abhängigkeiten werden ausdrücklich benannt statt per Autowiring.
+    # Grund: Contao 4.13 registriert für ImageFactoryInterface und den
+    # InsertTagParser noch keine Autowiring-Aliasse (die gibt es erst ab
+    # Contao 5), wohl aber die Dienst-IDs contao.image.factory und
+    # contao.insert_tag.parser. Über die IDs funktioniert die Verdrahtung
+    # in beiden Fassungen.
+
+    # Die eigentliche Übertragung der Nachrichten zur DSOL-Website.
+    Schachbulle\ContaoDsolnewsBundle\Classes\Synchronisation:
+        public: false
+        arguments:
+            $verbindung: '@database_connection'
+            $bildFabrik: '@contao.image.factory'
+            $inserttags: '@contao.insert_tag.parser'
+            $projektVerzeichnis: '%kernel.project_dir%'
+
+    # Backend-Einstieg des Moduls (BE_MOD-Schlüssel "dsolnews_synchro").
+    #
+    # Contao holt die Klasse in Backend::getBackendModule() über
+    # System::importStatic() — das prüft zuerst den Service-Container und
+    # greift nur dann auf "new" zurück. Der Dienst muss deshalb öffentlich
+    # sein und seine ID dem Klassennamen entsprechen, damit die
+    # Abhängigkeiten per Konstruktor hineinkommen.
+    Schachbulle\ContaoDsolnewsBundle\Classes\DSOLNews:
+        public: true
+        arguments:
+            $synchronisation: '@Schachbulle\ContaoDsolnewsBundle\Classes\Synchronisation'
+            $verbindung: '@database_connection'

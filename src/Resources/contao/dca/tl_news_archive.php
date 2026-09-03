@@ -1,14 +1,40 @@
 <?php
 
-use Contao\CoreBundle\DataContainer\PaletteManipulator;
+declare(strict_types=1);
 
+/*
+ * Dieses Bundle synchronisiert Nachrichten eines Contao-Archivs mit der
+ * Website der Deutschen Schach-Online-Liga; es läuft unter Contao 4.13
+ * und Contao 5.
+ *
+ * @license LGPL-3.0-or-later
+ */
+
+use Contao\Config;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\Input;
+use Schachbulle\ContaoDsolnewsBundle\Classes\NewsArchiveCallbacks;
+
+/*
+ * Anzeigefeld mit der Schaltfläche "Nachrichten synchronisieren".
+ *
+ * Das Feld hat bewusst weder 'sql' noch 'exclude': Es gibt keine Spalte dazu,
+ * und Contao 4.13 blendet ein Feld mit 'exclude' in der Bearbeitungsansicht
+ * ganz aus, während Contao 5 stattdessen die Feldberechtigung prüft. Ohne
+ * 'exclude' erscheint es in beiden Fassungen.
+ */
 $GLOBALS['TL_DCA']['tl_news_archive']['fields']['dsolnews_synchro'] = array
 (
-	'input_field_callback'    => array('tl_news_archive_dsolnews', 'getButton'),
+	'input_field_callback'    => array(NewsArchiveCallbacks::class, 'getButton'),
 );
 
-// Palette ändern, wenn das Nachrichten-Archiv für DSOL-Nachrichten verwendet werden soll
-if(\Input::get('id') == $GLOBALS['TL_CONFIG']['dsolnews_archiv'])
+/*
+ * Die Schaltfläche gehört nur an das eine Archiv, das in den Einstellungen für
+ * die DSOL-Nachrichten ausgewählt wurde.
+ */
+$dsolnewsArchiv = (int) Config::get('dsolnews_archiv');
+
+if ($dsolnewsArchiv > 0 && (int) Input::get('id') === $dsolnewsArchiv)
 {
 	PaletteManipulator::create()
 		// Neue Legende "dsolnews_legend" vor "title_legend" einfügen
@@ -17,22 +43,4 @@ if(\Input::get('id') == $GLOBALS['TL_CONFIG']['dsolnews_archiv'])
 		->addField('dsolnews_synchro', 'dsolnews_legend', PaletteManipulator::POSITION_APPEND)
 		// Palette ändern
 		->applyToPalette('default', 'tl_news_archive');
-}
-
-class tl_news_archive_dsolnews
-{
-	public function getButton(\DataContainer $dc)
-	{
-		return '
-		<div class="w50 widget">
-		<div class="selector_container">
-		<p>
-			<a href="contao?do=news&key=dsolnews_synchro&id='.\Input::get('id').'&rt='.REQUEST_TOKEN.'" class="tl_submit">'.$GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro'][0].'</a>
-		</p>
-		</div>
-		<p class="tl_help tl_tip" title="">'.$GLOBALS['TL_LANG']['tl_news_archive']['dsolnews_synchro'][1].'</p>
-		</div>
-		';
-
-	}
 }
